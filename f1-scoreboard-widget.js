@@ -390,15 +390,24 @@ const requests = {
     const scheduleURL = "http://ergast.com/api/f1/current.json";
 
     if (check === false) {
-      const apiReq = new Request(scheduleURL);
-      const apiObj = await apiReq.loadJSON();
-      const apiCache = JSON.stringify(apiObj);
-      cache.saveResponse(file.schedule, apiCache);
+      try {
+        const apiReq = new Request(scheduleURL);
+        const apiObj = await apiReq.loadJSON();
+        const apiCache = JSON.stringify(apiObj);
+        cache.saveResponse(file.schedule, apiCache);
+        console.log("Schedule downloaded and saved to cache");
+      } catch (error) {
+        console.log("Error downloading schedule: ", error);
+      }
     } else if (check === true && needToUpdate === true) {
-      const apiReq = new Request(scheduleURL);
-      const apiObj = await apiReq.loadJSON();
-      const apiCache = JSON.stringify(apiObj);
-      cache.saveResponse(file.schedule, apiCache);
+      try {
+        const apiReq = new Request(scheduleURL);
+        const apiObj = await apiReq.loadJSON();
+        const apiCache = JSON.stringify(apiObj);
+        cache.saveResponse(file.schedule, apiCache);
+      } catch (error) {
+        console.log("Error downloading schedule: ", error);
+      }
     } else {
       cache.readSchedule();
     }
@@ -409,17 +418,25 @@ const requests = {
     const driverURL = "http://ergast.com/api/f1/current/driverStandings.json";
 
     if (check === false) {
-      const apiReq = new Request(driverURL);
-      const apiObj = await apiReq.loadJSON();
-      const apiCache = JSON.stringify(apiObj);
-      cache.saveResponse(file.driverStandings, apiCache);
-      console.log("Driver Standings downloaded and saved to cache");
+      try {
+        const apiReq = new Request(driverURL);
+        const apiObj = await apiReq.loadJSON();
+        const apiCache = JSON.stringify(apiObj);
+        cache.saveResponse(file.driverStandings, apiCache);
+        console.log("Driver Standings downloaded and saved to cache");
+      } catch (error) {
+        console.log("Error downloading driver standings: ", error);
+      }
     } else if (check === true && needToUpdate === true) {
-      const apiReq = new Request(driverURL);
-      const apiObj = await apiReq.loadJSON();
-      const apiCache = JSON.stringify(apiObj);
-      cache.saveResponse(file.driverStandings, apiCache);
-      console.log("Driver Standings downloaded and saved to cache");
+      try {
+        const apiReq = new Request(driverURL);
+        const apiObj = await apiReq.loadJSON();
+        const apiCache = JSON.stringify(apiObj);
+        cache.saveResponse(file.driverStandings, apiCache);
+        console.log("Driver Standings downloaded and saved to cache");
+      } catch (error) {
+        console.log("Error downloading driver standings: ", error);
+      }
     } else {
       cache.readDriverStandings();
     }
@@ -430,17 +447,25 @@ const requests = {
     const constructorURL = "http://ergast.com/api/f1/current/constructorStandings.json";
 
     if (check === false) {
-      const apiReq = new Request(constructorURL);
-      const apiObj = await apiReq.loadJSON();
-      const apiCache = JSON.stringify(apiObj);
-      cache.saveResponse(file.constructorStandings, apiCache);
-      console.log("Constructor Standings downloaded and saved to cache");
+      try {
+        const apiReq = new Request(constructorURL);
+        const apiObj = await apiReq.loadJSON();
+        const apiCache = JSON.stringify(apiObj);
+        cache.saveResponse(file.constructorStandings, apiCache);
+        console.log("Constructor Standings downloaded and saved to cache");
+      } catch (error) {
+        console.log("Error downloading constructor standings: ", error);
+      }
     } else if (check === true && needToUpdate === true) {
-      const apiReq = new Request(constructorURL);
-      const apiObj = await apiReq.loadJSON();
-      const apiCache = JSON.stringify(apiObj);
-      cache.saveResponse(file.constructorStandings, apiCache);
-      console.log("Constructor Standings downloaded and saved to cache");
+      try {
+        const apiReq = new Request(constructorURL);
+        const apiObj = await apiReq.loadJSON();
+        const apiCache = JSON.stringify(apiObj);
+        cache.saveResponse(file.constructorStandings, apiCache);
+        console.log("Constructor Standings downloaded and saved to cache");
+      } catch (error) {
+        console.log("Error downloading constructor standings: ", error);
+      }
     } else {
       cache.readConstructorStandings();
     }
@@ -928,7 +953,7 @@ const views = {
       const logo = rowLogo.addImage(logoImage);
       logo.imageSize = new Size(20, 25);
 
-      mainStack.backgroundColor = new Color("99bbffff"); // placeholder color until I can implement a color picking function
+      widget.backgroundColor = new Color("99bbffff"); // placeholder color until I can implement a color picking function
     }
   },
 };
@@ -947,5 +972,10 @@ await cache.downloadCache(file.driverStandings);
 await cache.downloadCache(file.constructorStandings);
 await helper.downloadImages();
 
-if (config.runsInApp) widget.presentMedium();
-else if (config.runsInWidget) Script.setWidget(widget);
+views.showConstructorStandings();
+
+if (config.runsInApp) {
+  widget.presentMedium();
+} else if (config.runsInWidget) {
+  Script.setWidget(widget);
+}
