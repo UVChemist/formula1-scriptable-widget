@@ -797,10 +797,13 @@ const views = {
     const logoRow = widget.addStack();
     const mainStack = widget.addStack();
     const leftCol = mainStack.addStack();
+    mainStack.addSpacer();
     const centerLine = mainStack.addStack();
+    mainStack.addSpacer();
     const rightCol = mainStack.addStack();
     const leftOrganizerRow = leftCol.addStack();
     const rightOrganizerRow = rightCol.addStack();
+    leftOrganizerRow.addSpacer();
     const leftPosCol = leftOrganizerRow.addStack();
     const leftLogoCol = leftOrganizerRow.addStack();
     const leftTeamCol = leftOrganizerRow.addStack();
@@ -809,6 +812,7 @@ const views = {
     const rightLogoCol = rightOrganizerRow.addStack();
     const rightTeamCol = rightOrganizerRow.addStack();
     const rightPointsCol = rightOrganizerRow.addStack();
+    rightOrganizerRow.addSpacer();
 
     logoRow.layoutHorizontally();
     mainStack.layoutHorizontally();
@@ -829,17 +833,17 @@ const views = {
     logoRow.size = new Size(345, 30);
     mainStack.size = new Size(345, 128); // grab phone data (version or screen size) and calculate widget size
     leftCol.size = new Size(mainStack.size.width / 2, mainStack.size.height);
-    centerLine.size = new Size(1, mainStack.size.height * 0.8);
+    centerLine.size = new Size(0.5, mainStack.size.height);
     rightCol.size = new Size(mainStack.size.width / 2, mainStack.size.height);
     leftOrganizerRow.size = new Size(leftCol.size.width, leftCol.size.height);
     rightOrganizerRow.size = new Size(rightCol.size.width, rightCol.size.height);
     leftPosCol.size = new Size(leftOrganizerRow.size.width / 8, leftOrganizerRow.size.height);
     leftTeamCol.size = new Size(leftOrganizerRow.size.width / 2, leftOrganizerRow.size.height);
-    leftPointsCol.size = new Size(leftOrganizerRow.size.width / 8, leftOrganizerRow.size.height);
+    leftPointsCol.size = new Size(leftOrganizerRow.size.width / 6, leftOrganizerRow.size.height);
     leftLogoCol.size = new Size(leftOrganizerRow.size.width / 5, leftOrganizerRow.size.height);
     rightPosCol.size = new Size(rightOrganizerRow.size.width / 8, rightOrganizerRow.size.height);
     rightTeamCol.size = new Size(rightOrganizerRow.size.width / 2, rightOrganizerRow.size.height);
-    rightPointsCol.size = new Size(rightOrganizerRow.size.width / 8, rightOrganizerRow.size.height);
+    rightPointsCol.size = new Size(rightOrganizerRow.size.width / 6, rightOrganizerRow.size.height);
     rightLogoCol.size = new Size(rightOrganizerRow.size.width / 5, rightOrganizerRow.size.height);
 
     // Logo Row Settings
@@ -954,6 +958,7 @@ const views = {
       logo.imageSize = new Size(20, 25);
 
       widget.backgroundColor = new Color("99bbffff"); // placeholder color until I can implement a color picking function
+      centerLine.backgroundColor = new Color("ffffff");
     }
   },
 };
