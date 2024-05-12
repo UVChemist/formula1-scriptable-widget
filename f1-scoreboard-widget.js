@@ -27,6 +27,23 @@ const file = {
     haas: fileMgr.joinPath(appDir, "f1-scoreboard-files/team-logos/haas.png"),
     williams: fileMgr.joinPath(appDir, "f1-scoreboard-files/team-logos/williams.png"),
   },
+  flags: {
+    aus: fileMgr.joinPath(appDir, "f1-scoreboard-files/driver-flags/aus.png"),
+    can: fileMgr.joinPath(appDir, "f1-scoreboard-files/driver-flags/can.png"),
+    chn: fileMgr.joinPath(appDir, "f1-scoreboard-files/driver-flags/chn.png"),
+    deu: fileMgr.joinPath(appDir, "f1-scoreboard-files/driver-flags/deu.png"),
+    dnk: fileMgr.joinPath(appDir, "f1-scoreboard-files/driver-flags/dnk.png"),
+    esp: fileMgr.joinPath(appDir, "f1-scoreboard-files/driver-flags/esp.png"),
+    fin: fileMgr.joinPath(appDir, "f1-scoreboard-files/driver-flags/fin.png"),
+    fra: fileMgr.joinPath(appDir, "f1-scoreboard-files/driver-flags/fra.png"),
+    gbr: fileMgr.joinPath(appDir, "f1-scoreboard-files/driver-flags/gbr.png"),
+    jpn: fileMgr.joinPath(appDir, "f1-scoreboard-files/driver-flags/jpn.png"),
+    mco: fileMgr.joinPath(appDir, "f1-scoreboard-files/driver-flags/mco.png"),
+    mex: fileMgr.joinPath(appDir, "f1-scoreboard-files/driver-flags/mex.png"),
+    nld: fileMgr.joinPath(appDir, "f1-scoreboard-files/driver-flags/nld.png"),
+    tha: fileMgr.joinPath(appDir, "f1-scoreboard-files/driver-flags/tha.png"),
+    usa: fileMgr.joinPath(appDir, "f1-scoreboard-files/driver-flags/usa.png"),
+  },
   getDate(filePath) {
     const createDate = fileMgr.creationDate(filePath);
 
@@ -37,7 +54,6 @@ const file = {
 const cache = {
   check(filePath) {
     if (fileMgr.fileExists(filePath)) {
-      // add check to make sure standings are up to date or if they should be updated
       return true;
     } else {
       return false;
@@ -242,6 +258,18 @@ const f1Data = {
     }
 
     return driverNames;
+  },
+  driverStandingsSurnames() {
+    const driverSurnames = [];
+    const driverStandingsObj = cache.readDriverStandings();
+    const driverStandingsArr = driverStandingsObj.MRData.StandingsTable.StandingsLists[0].DriverStandings;
+
+    for (const standing of driverStandingsArr) {
+      const driverLName = standing.Driver.familyName;
+      driverSurnames.push(driverLName);
+    }
+
+    return driverSurnames;
   },
   driverStandingsPos() {
     const driverPositions = [];
@@ -565,6 +593,13 @@ const helper = {
     logoPaths.forEach((path) => {
       fileMgr.downloadFileFromiCloud(path);
     });
+
+    const flagPathObj = file.flags;
+    const flagPaths = Object.values(flagPathObj);
+
+    flagPaths.forEach((path) => {
+      fileMgr.downloadFileFromiCloud(path);
+    });
   },
 };
 
@@ -637,6 +672,7 @@ const viewData = {
     seasonYear: f1Data.scheduleYear(),
     currentRound: f1Data.roundInDriverCache(),
     drivers: f1Data.driverStandingsNames(),
+    driverSurnames: f1Data.driverStandingsSurnames(),
     positions: f1Data.driverStandingsPos(),
     points: f1Data.driverStandingsPoints(),
     wins: f1Data.driverStandingsWins(),
@@ -771,22 +807,191 @@ const views = {
     event5Text.font = Font.systemFont(14);
   },
   showDriverStandings() {
-    const driverNames = f1Data.driverStandingsNames();
+    const f1Font22 = new Font("Copperplate", 22);
+    const f1Font12 = new Font("Copperplate", 12);
+    const f1Font10 = new Font("Copperplate", 10);
+
     const driverPositions = f1Data.driverStandingsPos();
+    const driverNations = f1Data.driverNations();
+    const driverNames = f1Data.driverStandingsSurnames();
     const driverPoints = f1Data.driverStandingsPoints();
     const driverWins = f1Data.driverStandingsWins();
     const driverTeams = f1Data.driverStandingsTeams();
     const driverTeamCodes = f1Data.driverStandingsTeamCodes();
-    const driverNations = f1Data.driverNations();
 
+    const logoRow = widget.addStack();
     const mainStack = widget.addStack();
     const leftCol = mainStack.addStack();
+    mainStack.addSpacer();
+    const centerLine = mainStack.addStack();
+    mainStack.addSpacer();
     const rightCol = mainStack.addStack();
-    const logoRow = leftCol.addStack();
+    const leftOrganizerRow = leftCol.addStack();
+    const rightOrganizerRow = rightCol.addStack();
+    leftOrganizerRow.addSpacer();
+    const leftPosCol = leftOrganizerRow.addStack();
+    const leftFlagCol = leftOrganizerRow.addStack();
+    const leftNameCol = leftOrganizerRow.addStack();
+    const leftPointsCol = leftOrganizerRow.addStack();
+    const rightPosCol = rightOrganizerRow.addStack();
+    const rightFlagCol = rightOrganizerRow.addStack();
+    const rightNameCol = rightOrganizerRow.addStack();
+    const rightPointsCol = rightOrganizerRow.addStack();
+    rightOrganizerRow.addSpacer();
+
+    logoRow.layoutHorizontally();
+    mainStack.layoutHorizontally();
+    leftCol.layoutVertically();
+    centerLine.layoutVertically();
+    rightCol.layoutVertically();
+    leftOrganizerRow.layoutHorizontally();
+    rightOrganizerRow.layoutHorizontally();
+    leftPosCol.layoutVertically();
+    leftFlagCol.layoutVertically();
+    leftNameCol.layoutVertically();
+    leftPointsCol.layoutVertically();
+    rightPosCol.layoutVertically();
+    rightFlagCol.layoutVertically();
+    rightNameCol.layoutVertically();
+    rightPointsCol.layoutVertically();
+
+    logoRow.size = new Size(345, 30);
+    mainStack.size = new Size(345, 128); // grab phone data (version or screen size) and calculate widget size
+    leftCol.size = new Size(mainStack.size.width / 2, mainStack.size.height);
+    centerLine.size = new Size(0.5, mainStack.size.height);
+    rightCol.size = new Size(mainStack.size.width / 2, mainStack.size.height);
+    leftOrganizerRow.size = new Size(leftCol.size.width, leftCol.size.height);
+    rightOrganizerRow.size = new Size(rightCol.size.width, rightCol.size.height);
+    leftPosCol.size = new Size(leftOrganizerRow.size.width / 8, leftOrganizerRow.size.height);
+    leftFlagCol.size = new Size(leftOrganizerRow.size.width / 5, leftOrganizerRow.size.height);
+    leftNameCol.size = new Size(leftOrganizerRow.size.width / 2.2, leftOrganizerRow.size.height);
+    leftPointsCol.size = new Size(leftOrganizerRow.size.width / 6, leftOrganizerRow.size.height);
+    rightPosCol.size = new Size(rightOrganizerRow.size.width / 8, rightOrganizerRow.size.height);
+    rightFlagCol.size = new Size(rightOrganizerRow.size.width / 5, rightOrganizerRow.size.height);
+    rightNameCol.size = new Size(rightOrganizerRow.size.width / 2.2, rightOrganizerRow.size.height);
+    rightPointsCol.size = new Size(rightOrganizerRow.size.width / 6, rightOrganizerRow.size.height);
+
+    // Logo Row Settings
+    logoRow.centerAlignContent();
+
+    logoRow.addSpacer();
+    const f1Logo = logoRow.addImage(fileMgr.readImage(file.f1Logo));
+    logoRow.addSpacer();
+    const logoText = logoRow.addText("Constructor Standings");
+    logoRow.addSpacer();
+
+    f1Logo.imageSize = new Size(40, 40);
+    logoText.font = f1Font22;
+
+    // Main Stack Settings
+    const totalDrivers = driverNames.length;
+    let leftDrivers = 0;
+    let rightDrivers = 0;
+
+    if (totalDrivers % 2 === 0) {
+      leftDrivers = totalDrivers / 2;
+      rightDrivers = totalDrivers / 2;
+    } else {
+      leftDrivers = Math.ceil(totalDrivers / 2);
+      rightDrivers = Math.ceil(totalDrivers / 2);
+    }
+
+    for (let i = 0; i < leftDrivers; i++) {
+      const rowPos = leftPosCol.addStack();
+      const rowFlag = leftFlagCol.addStack();
+      const rowName = leftNameCol.addStack();
+      const rowPoints = leftPointsCol.addStack();
+
+      rowPos.centerAlignContent();
+      rowFlag.centerAlignContent();
+      rowName.centerAlignContent();
+      rowPoints.centerAlignContent();
+
+      rowPos.layoutHorizontally();
+      rowFlag.layoutHorizontally();
+      rowName.layoutHorizontally();
+      rowPoints.layoutHorizontally();
+
+      rowPos.size = new Size(leftPosCol.size.width, leftPosCol.size.height / leftDrivers);
+      rowFlag.size = new Size(leftFlagCol.size.width, leftFlagCol.size.height / leftDrivers);
+      rowName.size = new Size(leftNameCol.size.width, leftNameCol.size.height / leftDrivers);
+      rowPoints.size = new Size(leftPointsCol.size.width, leftPointsCol.size.height / leftDrivers);
+
+      const posText = rowPos.addText(`${driverPositions[i]}`);
+      const nameText = rowName.addText(`${driverNames[i]}`);
+      const pointsText = rowPoints.addText(`${driverPoints[i]}`);
+
+      rowName.addSpacer();
+
+      posText.font = f1Font12;
+      nameText.font = f1Font12;
+      pointsText.font = f1Font12;
+
+      posText.centerAlignText();
+      nameText.centerAlignText();
+      pointsText.centerAlignText();
+
+      const flagPath = file.flags[driverNations[i]]; // CREATE FLAG IMAGE PATHS
+      const flagImage = fileMgr.readImage(flagPath);
+
+      const flag = rowFlag.addImage(flagImage);
+      flag.imageSize = new Size(15, 15);
+    }
+
+    for (let i = rightDrivers; i < totalDrivers; i++) {
+      const rowPos = rightPosCol.addStack();
+      const rowFlag = rightFlagCol.addStack();
+      const rowName = rightNameCol.addStack();
+      const rowPoints = rightPointsCol.addStack();
+
+      rowPos.layoutHorizontally();
+      rowFlag.layoutHorizontally();
+      rowName.layoutHorizontally();
+      rowPoints.layoutHorizontally();
+
+      rowPos.centerAlignContent();
+      rowFlag.centerAlignContent();
+      rowName.centerAlignContent();
+      rowPoints.centerAlignContent();
+
+      rowPos.size = new Size(rightPosCol.size.width, rightPosCol.size.height / rightDrivers);
+      rowFlag.size = new Size(rightFlagCol.size.width, rightFlagCol.size.height / rightDrivers);
+      rowName.size = new Size(rightNameCol.size.width, rightNameCol.size.height / rightDrivers);
+      rowPoints.size = new Size(rightPointsCol.size.width, rightPointsCol.size.height / rightDrivers);
+
+      const posText = rowPos.addText(`${driverPositions[i]}`);
+      const nameText = rowName.addText(`${driverNames[i]}`);
+      const pointsText = rowPoints.addText(`${driverPoints[i]}`);
+
+      rowName.addSpacer();
+
+      posText.font = f1Font12;
+      nameText.font = f1Font12;
+      pointsText.font = f1Font12;
+
+      posText.centerAlignText();
+      nameText.centerAlignText();
+      pointsText.centerAlignText();
+
+      const flagPath = file.flags[driverNations[i]];
+      const flagImage = fileMgr.readImage(flagPath);
+      console.log[i];
+      console.log[flagPath];
+
+      const flag = rowFlag.addImage(flagImage);
+      flag.imageSize = new Size(15, 15);
+    }
+
+    if (totalDrivers % 2 !== 0) {
+      rightCol.addSpacer(12);
+    }
+
+    widget.backgroundColor = new Color("99bbffff"); // placeholder color until I can implement a color picking function
+    centerLine.backgroundColor = new Color("ffffff");
   },
   showConstructorStandings() {
-    const f1FontLarge = new Font("Copperplate", 22);
-    const f1FontSmall = new Font("Copperplate", 12);
+    const f1Font22 = new Font("Copperplate", 22);
+    const f1Font12 = new Font("Copperplate", 12);
 
     const constructorTeams = f1Data.constructorTeams();
     const constructorPositions = f1Data.constructorPositions();
@@ -856,7 +1061,7 @@ const views = {
     logoRow.addSpacer();
 
     f1Logo.imageSize = new Size(40, 40);
-    logoText.font = f1FontLarge;
+    logoText.font = f1Font22;
 
     // Main Stack Settings
 
@@ -899,9 +1104,9 @@ const views = {
 
       rowTeam.addSpacer();
 
-      posText.font = f1FontSmall;
-      teamText.font = f1FontSmall;
-      pointsText.font = f1FontSmall;
+      posText.font = f1Font12;
+      teamText.font = f1Font12;
+      pointsText.font = f1Font12;
 
       posText.centerAlignText();
       teamText.centerAlignText();
@@ -941,9 +1146,9 @@ const views = {
 
       rowTeam.addSpacer();
 
-      posText.font = f1FontSmall;
-      teamText.font = f1FontSmall;
-      pointsText.font = f1FontSmall;
+      posText.font = f1Font12;
+      teamText.font = f1Font12;
+      pointsText.font = f1Font12;
 
       posText.centerAlignText();
       teamText.centerAlignText();
@@ -955,7 +1160,7 @@ const views = {
       console.log[logoPath];
 
       const logo = rowLogo.addImage(logoImage);
-      logo.imageSize = new Size(20, 25);
+      logo.imageSize = new Size(20, 20);
 
       widget.backgroundColor = new Color("99bbffff"); // placeholder color until I can implement a color picking function
       centerLine.backgroundColor = new Color("ffffff");
@@ -972,12 +1177,12 @@ const app = {
 await requests.scheduleRequest();
 await requests.constructorRequest();
 await requests.driversRequest();
-await cache.downloadCache(file.schedule); // can implement a check to see if the file is downloaded
+await cache.downloadCache(file.schedule);
 await cache.downloadCache(file.driverStandings);
 await cache.downloadCache(file.constructorStandings);
 await helper.downloadImages();
 
-views.showConstructorStandings();
+views.showDriverStandings();
 
 if (config.runsInApp) {
   widget.presentMedium();
