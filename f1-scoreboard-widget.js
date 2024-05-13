@@ -201,12 +201,12 @@ const f1Data = {
       const thirdEventDT = new Date(`${thirdEventObj.date}T${thirdEventObj.time}`);
       const fourthEventDT = new Date(`${fourthEventObj.date}T${fourthEventObj.time}`);
 
-      events.push(
-        { eventOne, firstEventDT },
-        { eventTwo, secondEventDT },
-        { eventThree, thirdEventDT },
-        { eventFour, fourthEventDT }
-      );
+      const eventOneObj = { event: eventOne, date: firstEventDT };
+      const eventTwoObj = { event: eventTwo, date: secondEventDT };
+      const eventThreeObj = { event: eventThree, date: thirdEventDT };
+      const eventFourObj = { event: eventFour, date: fourthEventDT };
+
+      events.push(eventOneObj, eventTwoObj, eventThreeObj, eventFourObj);
     } else {
       let firstEventObj = scheduleObj.MRData.RaceTable.Races[roundInCache].FirstPractice;
       let secondEventObj = scheduleObj.MRData.RaceTable.Races[roundInCache].SecondPractice;
@@ -223,12 +223,12 @@ const f1Data = {
       const thirdEventDT = new Date(`${thirdEventObj.date}T${thirdEventObj.time}`);
       const fourthEventDT = new Date(`${fourthEventObj.date}T${fourthEventObj.time}`);
 
-      events.push(
-        { eventOne, firstEventDT },
-        { eventTwo, secondEventDT },
-        { eventThree, thirdEventDT },
-        { eventFour, fourthEventDT }
-      );
+      const eventOneObj = { event: eventOne, date: firstEventDT };
+      const eventTwoObj = { event: eventTwo, date: secondEventDT };
+      const eventThreeObj = { event: eventThree, date: thirdEventDT };
+      const eventFourObj = { event: eventFour, date: fourthEventDT };
+
+      events.push(eventOneObj, eventTwoObj, eventThreeObj, eventFourObj);
     }
 
     return events;
@@ -528,13 +528,21 @@ const helper = {
     const nationISOCode = countryCodes[nationString];
     return nationISOCode;
   },
-  smallDateFormat(dateString) {
-    const dateObj = new Date(dateString);
-    const month = dateObj.getMonth() + 1;
-    const day = dateObj.getDate();
-    const smallDate = `${month}/${day}`;
+  smallDateFormat(date) {
+    if (typeof date === "string") {
+      const dateObj = new Date(date);
+      const month = dateObj.getMonth() + 1;
+      const day = dateObj.getDate();
+      const smallDate = `${month}/${day}`;
 
-    return smallDate;
+      return smallDate;
+    } else if (typeof date === "object") {
+      const month = date.getMonth() + 1;
+      const day = date.getDate();
+      const smallDate = `${month}/${day}`;
+
+      return smallDate;
+    }
   },
   roundDisplayCalculator() {
     const totalRounds = f1Data.totalRounds();
@@ -600,6 +608,17 @@ const helper = {
     flagPaths.forEach((path) => {
       fileMgr.downloadFileFromiCloud(path);
     });
+  },
+  timeFormatter(dateObj) {
+    const timeString = dateObj.toLocaleTimeString();
+
+    if (timeString.length === 10) {
+      const formattedTime = timeString.slice(0, 4) + " " + timeString.slice(-2);
+      return formattedTime;
+    } else if (timeString.length === 11) {
+      const formattedTime = timeString.slice(0, 5) + " " + timeString.slice(-2);
+      return formattedTime;
+    }
   },
 };
 
@@ -755,6 +774,10 @@ const views = {
   },
   showNextGP() {
     //shows date and time for the next GP
+    const f1Font22 = new Font("Copperplate", 22);
+    const f1Font12 = new Font("Copperplate", 12);
+    const f1Font10 = new Font("Copperplate", 10);
+
     const nextDateString = f1Data.nextGPDate();
     const nextTimeString = f1Data.nextGPTime();
     const combinedDTString = `${nextDateString}T${nextTimeString}`;
@@ -762,49 +785,106 @@ const views = {
     const nextLoc = f1Data.nextGPLoc();
     const nextEvents = f1Data.nextGPEvents(); // format is an array of objects in the following order: 1st Practice, 2nd Practice, 3rd Practice, Qualifying
 
+    const logoRow = widget.addStack();
     const mainStack = widget.addStack();
     const leftCol = mainStack.addStack();
     const rightCol = mainStack.addStack();
-    const logoRow = leftCol.addStack();
+    const leftOrganizerRow = leftCol.addStack();
+    const eventDateCol = leftOrganizerRow.addStack();
+    const eventNameCol = leftOrganizerRow.addStack();
+    const eventTimeCol = rightOrganizerRow.addStack();
+    const gpRow = rightCol.addStack();
+    const gpDateTimeRow = rightCol.addStack();
+    const gpTrackRow = rightCol.addStack();
 
+    logoRow.layoutHorizontally();
     mainStack.layoutHorizontally();
     leftCol.layoutVertically();
     rightCol.layoutVertically();
-    logoRow.layoutHorizontally();
+    leftOrganizerRow.layoutHorizontally();
+    eventDateCol.layoutVertically();
+    eventNameCol.layoutVertically();
+    eventTimeCol.layoutVertically();
+    gpRow.layoutHorizontally();
+    gpDateTimeRow.layoutHorizontally();
+    gpTrackRow.layoutHorizontally();
 
-    mainStack.size = new Size(345, 158); // grab phone data (version or screen size) and calculate widget size
+    logoRow.size = new Size(345, 30);
+    mainStack.size = new Size(345, 128); // grab phone data (version or screen size) and calculate widget size
     leftCol.size = new Size(mainStack.size.width / 2, mainStack.size.height);
     rightCol.size = new Size(mainStack.size.width / 2, mainStack.size.height);
+    leftOrganizerRow.size = new Size(leftCol.size.width, leftCol.size.height);
+    eventDateCol.size = new Size(leftOrganizerRow.size.width / 4, leftOrganizerRow.size.height);
+    eventNameCol.size = new Size(leftOrganizerRow.size.width / 2, leftOrganizerRow.size.height);
+    eventTimeCol.size = new Size(leftOrganizerRow.size.width / 4, leftOrganizerRow.size.height);
+    gpRow.size = new Size(rightCol.size.width, rightCol.size.height / 4);
+    gpDateTimeRow.size = new Size(rightCol.size.width, rightCol.size.height / 4);
+    gpTrackRow.size = new Size(rightCol.size.width, rightCol.size.height / 2);
 
-    const event1Row = leftCol.addStack();
-    const event2Row = leftCol.addStack();
-    const event3Row = rightCol.addStack();
-    const event4Row = rightCol.addStack();
-    const raceRow = rightCol.addStack();
+    // Logo Row Settings
+    logoRow.centerAlignContent();
 
-    event1Row.layoutHorizontally();
-    event2Row.layoutHorizontally();
-    event3Row.layoutHorizontally();
-    event4Row.layoutHorizontally();
-    raceRow.layoutHorizontally();
+    logoRow.addSpacer();
+    const f1Logo = logoRow.addImage(fileMgr.readImage(file.f1Logo));
+    logoRow.addSpacer();
+    const logoText = logoRow.addText("Constructor Standings");
+    logoRow.addSpacer();
 
-    event1Row.addSpacer(20);
-    event2Row.addSpacer(20);
-    event3Row.addSpacer(20);
-    event4Row.addSpacer(20);
-    raceRow.addSpacer(20);
+    f1Logo.imageSize = new Size(40, 40);
+    logoText.font = f1Font22;
 
-    const event1Text = event1Row.addText(helper.eventFormatter(nextEvents[0].eventOne, nextEvents[0].firstEventDT));
-    const event2Text = event2Row.addText(helper.eventFormatter(nextEvents[1].eventTwo, nextEvents[1].secondEventDT));
-    const event3Text = event3Row.addText(helper.eventFormatter(nextEvents[2].eventThree, nextEvents[2].thirdEventDT));
-    const event4Text = event4Row.addText(helper.eventFormatter(nextEvents[3].eventFour, nextEvents[3].fourthEventDT));
-    const event5Text = raceRow.addText(helper.eventFormatter("Grand Prix", nextRaceDateObj));
+    // Main Stack Settings
+    const preRaceEvents = 4;
 
-    event1Text.font = Font.systemFont(14);
-    event2Text.font = Font.systemFont(14);
-    event3Text.font = Font.systemFont(14);
-    event4Text.font = Font.systemFont(14);
-    event5Text.font = Font.systemFont(14);
+    for (let i = 0; i < preRaceEvents; i++) {
+      const event = nextEvents[i].event;
+      const eventDateObj = nextEvents[i].date;
+      const eventSmallDate = helper.smallDateFormat(eventDateObj);
+      const eventTime = helper.timeFormatter(eventDateObj);
+
+      const rowDate = eventDateCol.addStack();
+      const rowEvent = eventNameCol.addStack();
+      const rowTime = eventTimeCol.addStack();
+
+      rowDate.centerAlignContent();
+      rowEvent.centerAlignContent();
+      rowTime.centerAlignContent();
+
+      rowDate.layoutHorizontally();
+      rowEvent.layoutHorizontally();
+      rowTime.layoutHorizontally();
+
+      rowDate.size = new Size(eventDateCol.size.width, eventDateCol.size.height / 4);
+      rowEvent.size = new Size(eventNameCol.size.width, eventNameCol.size.height / 4);
+      rowTime.size = new Size(eventTimeCol.size.width, eventTimeCol.size.height / 4);
+
+      const dateText = rowDate.addText(eventSmallDate);
+      const eventText = rowEvent.addText(event);
+      const timeText = rowTime.addText(eventTime);
+
+      dateText.font = f1Font12;
+      eventText.font = f1Font12;
+      timeText.font = f1Font12;
+
+      dateText.centerAlignText();
+      eventText.centerAlignText();
+      timeText.centerAlignText();
+    }
+
+    const gpSmallDate = helper.smallDateFormat(nextRaceDateObj);
+    const gpTime = helper.timeFormatter(nextRaceDateObj);
+
+    const gpRowText = gpRow.addText(nextLoc);
+    const gpDateTimeText = gpDateRow.addText(`${gpSmallDate} ${gpTime}`);
+
+    gpRowText.font = f1Font22;
+    gpDateTimeText.font = f1Font12;
+
+    gpRowText.centerAlignText();
+    gpDateTimeText.centerAlignText();
+
+    widget.backgroundColor = new Color("99bbffff"); // placeholder color until I can implement a color picking function
+    centerLine.backgroundColor = new Color("ffffff");
   },
   showDriverStandings() {
     const f1Font22 = new Font("Copperplate", 22);
