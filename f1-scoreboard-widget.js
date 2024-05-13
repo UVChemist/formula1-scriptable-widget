@@ -44,6 +44,32 @@ const file = {
     tha: fileMgr.joinPath(appDir, "f1-scoreboard-files/driver-flags/tha.png"),
     usa: fileMgr.joinPath(appDir, "f1-scoreboard-files/driver-flags/usa.png"),
   },
+  tracks: {
+    albert_park: fileMgr.joinPath(appDir, "f1-scoreboard-files/tracks/albert_park.png"),
+    americas: fileMgr.joinPath(appDir, "f1-scoreboard-files/tracks/americas.png"),
+    bahrain: fileMgr.joinPath(appDir, "f1-scoreboard-files/tracks/bahrain.png"),
+    baku: fileMgr.joinPath(appDir, "f1-scoreboard-files/tracks/baku.png"),
+    catalunya: fileMgr.joinPath(appDir, "f1-scoreboard-files/tracks/catalunya.png"),
+    hungaroring: fileMgr.joinPath(appDir, "f1-scoreboard-files/tracks/hungaroring.png"),
+    imola: fileMgr.joinPath(appDir, "f1-scoreboard-files/tracks/imola.png"),
+    interlagos: fileMgr.joinPath(appDir, "f1-scoreboard-files/tracks/interlagos.png"),
+    jeddah: fileMgr.joinPath(appDir, "f1-scoreboard-files/tracks/jeddah.png"),
+    losail: fileMgr.joinPath(appDir, "f1-scoreboard-files/tracks/losail.png"),
+    marina_bay: fileMgr.joinPath(appDir, "f1-scoreboard-files/tracks/marina_bay.png"),
+    miami: fileMgr.joinPath(appDir, "f1-scoreboard-files/tracks/miami.png"),
+    monaco: fileMgr.joinPath(appDir, "f1-scoreboard-files/tracks/monaco.png"),
+    monza: fileMgr.joinPath(appDir, "f1-scoreboard-files/tracks/monza.png"),
+    red_bull_ring: fileMgr.joinPath(appDir, "f1-scoreboard-files/tracks/red_bull_ring.png"),
+    rodriguez: fileMgr.joinPath(appDir, "f1-scoreboard-files/tracks/rodriguez.png"),
+    shanghai: fileMgr.joinPath(appDir, "f1-scoreboard-files/tracks/shanghai.png"),
+    silverstone: fileMgr.joinPath(appDir, "f1-scoreboard-files/tracks/silverstone.png"),
+    spa: fileMgr.joinPath(appDir, "f1-scoreboard-files/tracks/spa.png"),
+    suzuka: fileMgr.joinPath(appDir, "f1-scoreboard-files/tracks/suzuka.png"),
+    vegas: fileMgr.joinPath(appDir, "f1-scoreboard-files/tracks/vegas.png"),
+    villeneuve: fileMgr.joinPath(appDir, "f1-scoreboard-files/tracks/villeneuve.png"),
+    yas_marina: fileMgr.joinPath(appDir, "f1-scoreboard-files/tracks/yas_marina.png"),
+    zandvoort: fileMgr.joinPath(appDir, "f1-scoreboard-files/tracks/zandvoort.png"),
+  },
   getDate(filePath) {
     const createDate = fileMgr.creationDate(filePath);
 
@@ -606,6 +632,13 @@ const helper = {
     const flagPaths = Object.values(flagPathObj);
 
     flagPaths.forEach((path) => {
+      fileMgr.downloadFileFromiCloud(path);
+    });
+
+    const trackPathObj = file.tracks;
+    const trackPaths = Object.values(trackPathObj);
+
+    trackPaths.forEach((path) => {
       fileMgr.downloadFileFromiCloud(path);
     });
   },
