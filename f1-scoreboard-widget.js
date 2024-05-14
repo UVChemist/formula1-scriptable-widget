@@ -204,6 +204,13 @@ const f1Data = {
 
     return raceLoc;
   },
+  nextGPTrackID(round) {
+    const nextRound = round + 1;
+    const scheduleObj = cache.readSchedule();
+    const trackID = scheduleObj.MRData.RaceTable.Races[nextRound].Circuit.circuitId;
+
+    return trackID;
+  },
   nextGPEvents() {
     const events = [];
     const scheduleObj = cache.readSchedule();
@@ -808,8 +815,8 @@ const views = {
   showNextGP() {
     //shows date and time for the next GP
     const f1Font22 = new Font("Copperplate", 22);
-    const f1Font12 = new Font("Copperplate", 12);
-    const f1Font10 = new Font("Copperplate", 10);
+    const f1Font16 = new Font("Copperplate", 16);
+    const f1Font14 = new Font("Copperplate", 14);
 
     const nextDateString = f1Data.nextGPDate();
     const nextTimeString = f1Data.nextGPTime();
@@ -817,6 +824,8 @@ const views = {
     const nextRaceDateObj = new Date(combinedDTString);
     const nextLoc = f1Data.nextGPLoc();
     const nextEvents = f1Data.nextGPEvents(); // format is an array of objects in the following order: 1st Practice, 2nd Practice, 3rd Practice, Qualifying
+    const currentRound = parseInt(f1Data.roundInDriverCache());
+    const nextTrackID = f1Data.nextGPTrackID(currentRound);
 
     const logoRow = widget.addStack();
     const mainStack = widget.addStack();
@@ -825,7 +834,7 @@ const views = {
     const leftOrganizerRow = leftCol.addStack();
     const eventDateCol = leftOrganizerRow.addStack();
     const eventNameCol = leftOrganizerRow.addStack();
-    const eventTimeCol = rightOrganizerRow.addStack();
+    const eventTimeCol = leftOrganizerRow.addStack();
     const gpRow = rightCol.addStack();
     const gpDateTimeRow = rightCol.addStack();
     const gpTrackRow = rightCol.addStack();
@@ -847,11 +856,11 @@ const views = {
     leftCol.size = new Size(mainStack.size.width / 2, mainStack.size.height);
     rightCol.size = new Size(mainStack.size.width / 2, mainStack.size.height);
     leftOrganizerRow.size = new Size(leftCol.size.width, leftCol.size.height);
-    eventDateCol.size = new Size(leftOrganizerRow.size.width / 4, leftOrganizerRow.size.height);
+    eventDateCol.size = new Size(leftOrganizerRow.size.width / 6, leftOrganizerRow.size.height);
     eventNameCol.size = new Size(leftOrganizerRow.size.width / 2, leftOrganizerRow.size.height);
     eventTimeCol.size = new Size(leftOrganizerRow.size.width / 4, leftOrganizerRow.size.height);
     gpRow.size = new Size(rightCol.size.width, rightCol.size.height / 4);
-    gpDateTimeRow.size = new Size(rightCol.size.width, rightCol.size.height / 4);
+    gpDateTimeRow.size = new Size(rightCol.size.width, rightCol.size.height / 6);
     gpTrackRow.size = new Size(rightCol.size.width, rightCol.size.height / 2);
 
     // Logo Row Settings
@@ -859,8 +868,8 @@ const views = {
 
     logoRow.addSpacer();
     const f1Logo = logoRow.addImage(fileMgr.readImage(file.f1Logo));
-    logoRow.addSpacer();
-    const logoText = logoRow.addText("Constructor Standings");
+    logoRow.addSpacer(10);
+    const logoText = logoRow.addText(`Round ${currentRound + 1} Schedule`);
     logoRow.addSpacer();
 
     f1Logo.imageSize = new Size(40, 40);
@@ -895,9 +904,9 @@ const views = {
       const eventText = rowEvent.addText(event);
       const timeText = rowTime.addText(eventTime);
 
-      dateText.font = f1Font12;
-      eventText.font = f1Font12;
-      timeText.font = f1Font12;
+      dateText.font = f1Font14;
+      eventText.font = f1Font14;
+      timeText.font = f1Font14;
 
       dateText.centerAlignText();
       eventText.centerAlignText();
@@ -908,16 +917,22 @@ const views = {
     const gpTime = helper.timeFormatter(nextRaceDateObj);
 
     const gpRowText = gpRow.addText(nextLoc);
-    const gpDateTimeText = gpDateRow.addText(`${gpSmallDate} ${gpTime}`);
+    const gpDateTimeText = gpDateTimeRow.addText(`${gpSmallDate} ${gpTime}`);
 
-    gpRowText.font = f1Font22;
-    gpDateTimeText.font = f1Font12;
+    gpRowText.font = f1Font16;
+    gpDateTimeText.font = f1Font14;
 
     gpRowText.centerAlignText();
     gpDateTimeText.centerAlignText();
+    gpTrackRow.centerAlignContent();
+
+    const loadTrackImage = fileMgr.readImage(file.tracks[nextTrackID]);
+    const trackImage = gpTrackRow.addImage(loadTrackImage);
+
+    trackImage.imageSize = new Size(150, 150);
 
     widget.backgroundColor = new Color("99bbffff"); // placeholder color until I can implement a color picking function
-    centerLine.backgroundColor = new Color("ffffff");
+    //centerLine.backgroundColor = new Color("ffffff");
   },
   showDriverStandings() {
     const f1Font22 = new Font("Copperplate", 22);
@@ -1295,7 +1310,7 @@ await cache.downloadCache(file.driverStandings);
 await cache.downloadCache(file.constructorStandings);
 await helper.downloadImages();
 
-views.showDriverStandings();
+views.showNextGP();
 
 if (config.runsInApp) {
   widget.presentMedium();
