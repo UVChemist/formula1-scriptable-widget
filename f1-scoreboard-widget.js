@@ -205,7 +205,7 @@ const f1Data = {
     return raceLoc;
   },
   nextGPTrackID(round) {
-    const nextRound = round + 1;
+    const nextRound = round;
     const scheduleObj = cache.readSchedule();
     const trackID = scheduleObj.MRData.RaceTable.Races[nextRound].Circuit.circuitId;
 
@@ -815,8 +815,9 @@ const views = {
   showNextGP() {
     //shows date and time for the next GP
     const f1Font22 = new Font("Copperplate", 22);
-    const f1Font16 = new Font("Copperplate", 16);
+    const f1Font16 = new Font("Copperplate-Bold", 16);
     const f1Font14 = new Font("Copperplate", 14);
+    const f1Font12 = new Font("Copperplate", 12);
 
     const nextDateString = f1Data.nextGPDate();
     const nextTimeString = f1Data.nextGPTime();
@@ -829,8 +830,10 @@ const views = {
 
     const logoRow = widget.addStack();
     const mainStack = widget.addStack();
+    mainStack.addSpacer();
     const leftCol = mainStack.addStack();
     const rightCol = mainStack.addStack();
+    mainStack.addSpacer();
     const leftOrganizerRow = leftCol.addStack();
     const eventDateCol = leftOrganizerRow.addStack();
     const eventNameCol = leftOrganizerRow.addStack();
@@ -858,10 +861,10 @@ const views = {
     leftOrganizerRow.size = new Size(leftCol.size.width, leftCol.size.height);
     eventDateCol.size = new Size(leftOrganizerRow.size.width / 6, leftOrganizerRow.size.height);
     eventNameCol.size = new Size(leftOrganizerRow.size.width / 2, leftOrganizerRow.size.height);
-    eventTimeCol.size = new Size(leftOrganizerRow.size.width / 4, leftOrganizerRow.size.height);
-    gpRow.size = new Size(rightCol.size.width, rightCol.size.height / 4);
-    gpDateTimeRow.size = new Size(rightCol.size.width, rightCol.size.height / 6);
-    gpTrackRow.size = new Size(rightCol.size.width, rightCol.size.height / 2);
+    eventTimeCol.size = new Size(leftOrganizerRow.size.width / 3, leftOrganizerRow.size.height);
+    gpRow.size = new Size(rightCol.size.width, rightCol.size.height / 3.5);
+    gpDateTimeRow.size = new Size(rightCol.size.width, rightCol.size.height / 10);
+    gpTrackRow.size = new Size(rightCol.size.width, rightCol.size.height / 1.8);
 
     // Logo Row Settings
     logoRow.centerAlignContent();
@@ -904,12 +907,12 @@ const views = {
       const eventText = rowEvent.addText(event);
       const timeText = rowTime.addText(eventTime);
 
-      dateText.font = f1Font14;
+      dateText.font = f1Font12;
       eventText.font = f1Font14;
-      timeText.font = f1Font14;
+      timeText.font = f1Font12;
 
       dateText.centerAlignText();
-      eventText.centerAlignText();
+      eventText.leftAlignText();
       timeText.centerAlignText();
     }
 
@@ -920,7 +923,7 @@ const views = {
     const gpDateTimeText = gpDateTimeRow.addText(`${gpSmallDate} ${gpTime}`);
 
     gpRowText.font = f1Font16;
-    gpDateTimeText.font = f1Font14;
+    gpDateTimeText.font = f1Font12;
 
     gpRowText.centerAlignText();
     gpDateTimeText.centerAlignText();
@@ -929,7 +932,7 @@ const views = {
     const loadTrackImage = fileMgr.readImage(file.tracks[nextTrackID]);
     const trackImage = gpTrackRow.addImage(loadTrackImage);
 
-    trackImage.imageSize = new Size(150, 150);
+    trackImage.applyFittingContentMode();
 
     widget.backgroundColor = new Color("99bbffff"); // placeholder color until I can implement a color picking function
     //centerLine.backgroundColor = new Color("ffffff");
