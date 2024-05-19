@@ -138,7 +138,7 @@ const f1Data = {
     const races = scheduleObj.MRData.RaceTable.Races;
 
     for (const race of races) {
-      const adjString = race.raceName.slice(0, -10) + " GP";
+      const adjString = race.raceName.slice(0, -10);
       raceList.push(adjString); //Circuit.Location.country for country name
     }
 
@@ -578,6 +578,7 @@ const helper = {
     }
   },
   roundDisplayCalculator() {
+    //remove this function as it will not be used since the current font allows for all 24 rounds to be displayed
     const totalRounds = f1Data.totalRounds();
     const currentRound = parseInt(f1Data.roundInDriverCache());
     const roundsLeft = totalRounds - currentRound;
@@ -753,64 +754,106 @@ const viewData = {
 const views = {
   showSeasonSchedule() {
     // shows the next 12 races
+    const f1Font22 = new Font("Copperplate", 22);
+    const f1Font16 = new Font("Copperplate-Bold", 16);
+    const f1Font14 = new Font("Copperplate", 14);
+    const f1Font12 = new Font("Copperplate", 12);
+
     const gpDates = viewData.seasonSchedule.gpShortDate();
     const gpLocs = viewData.seasonSchedule.gpLocations;
+    const currentYear = f1Data.scheduleYear();
+    const totalRounds = f1Data.totalRounds();
+    const halfRounds = Math.ceil(totalRounds / 2);
+
+    const logoRow = widget.addStack();
     const mainStack = widget.addStack();
-    const column1 = mainStack.addStack();
-    const column2 = mainStack.addStack();
-    const roundNumberArray = helper.roundDisplayCalculator();
-    const lColStart = roundNumberArray[0];
-    const lColEnd = roundNumberArray[1];
-    const rColStart = roundNumberArray[2];
-    const rColEnd = roundNumberArray[3];
+    //mainStack.addSpacer();
+    const leftCol = mainStack.addStack();
+    const rightCol = mainStack.addStack();
+    //mainStack.addSpacer();
+    const leftOrganizerRow = leftCol.addStack();
+    const rightOrganizerRow = rightCol.addStack();
+    leftOrganizerRow.addSpacer();
+    const leftDateCol = leftOrganizerRow.addStack();
+    const leftGPCol = leftOrganizerRow.addStack();
+    const rightDateCol = rightOrganizerRow.addStack();
+    const rightGPCol = rightOrganizerRow.addStack();
+    rightOrganizerRow.addSpacer();
 
+    logoRow.layoutHorizontally();
     mainStack.layoutHorizontally();
-    column1.layoutVertically();
-    column2.layoutVertically();
-    mainStack.size = new Size(345, 158); // grab phone data (version or screen size) and calculate widget size
-    column1.size = new Size(mainStack.size.width / 2, mainStack.size.height);
-    column2.size = new Size(mainStack.size.width / 2, mainStack.size.height);
+    leftCol.layoutVertically();
+    rightCol.layoutVertically();
+    leftOrganizerRow.layoutHorizontally();
+    rightOrganizerRow.layoutHorizontally();
+    leftDateCol.layoutVertically();
+    leftGPCol.layoutVertically();
+    rightDateCol.layoutVertically();
+    rightGPCol.layoutVertically();
 
-    const col1LayoutRow = column1.addStack();
-    col1LayoutRow.layoutHorizontally();
-    const leftCol1 = col1LayoutRow.addStack();
-    leftCol1.layoutVertically();
-    leftCol1.size = new Size(column1.size.width / 3, mainStack.size.height);
-    const rightCol1 = col1LayoutRow.addStack();
-    rightCol1.layoutVertically();
-    rightCol1.size = new Size(column1.size.width / 1.5, mainStack.size.height);
+    logoRow.size = new Size(345, 30);
+    mainStack.size = new Size(345, 128); // grab phone data (version or screen size) and calculate widget size
+    leftCol.size = new Size(mainStack.size.width / 2, mainStack.size.height);
+    rightCol.size = new Size(mainStack.size.width / 2, mainStack.size.height);
+    leftOrganizerRow.size = new Size(leftCol.size.width, leftCol.size.height);
+    rightOrganizerRow.size = new Size(rightCol.size.width, rightCol.size.height);
+    leftDateCol.size = new Size(leftOrganizerRow.size.width / 4, leftOrganizerRow.size.height);
+    leftGPCol.size = new Size(leftOrganizerRow.size.width / 2, leftOrganizerRow.size.height);
+    rightDateCol.size = new Size(rightOrganizerRow.size.width / 4, rightOrganizerRow.size.height);
+    rightGPCol.size = new Size(rightOrganizerRow.size.width / 2, rightOrganizerRow.size.height);
 
-    const col2LayoutRow = column2.addStack();
-    col2LayoutRow.layoutHorizontally();
-    const leftCol2 = col2LayoutRow.addStack();
-    leftCol2.layoutVertically();
-    leftCol2.size = new Size(column2.size.width / 3, mainStack.size.height);
-    const rightCol2 = col2LayoutRow.addStack();
-    rightCol2.layoutVertically();
-    rightCol2.size = new Size(column2.size.width / 1.5, mainStack.size.height);
+    // Logo Row Settings
+    logoRow.centerAlignContent();
 
-    for (let i = lColStart; i < lColEnd; i++) {
-      const rowL = leftCol1.addStack();
-      const rowR = rightCol1.addStack();
-      rowL.layoutHorizontally();
-      rowR.layoutHorizontally();
-      rowL.addSpacer(20);
-      const rowDateText = rowL.addText(`${gpDates[i]}`);
-      const rowLocText = rowR.addText(`${gpLocs[i]}`);
-      rowDateText.font = Font.systemFont(12);
-      rowLocText.font = Font.systemFont(12);
+    logoRow.addSpacer();
+    const f1Logo = logoRow.addImage(fileMgr.readImage(file.f1Logo));
+    logoRow.addSpacer(10);
+    const logoText = logoRow.addText(`${currentYear} GP Schedule`);
+    logoRow.addSpacer();
+
+    f1Logo.imageSize = new Size(40, 40);
+    logoText.font = f1Font22;
+
+    for (let i = 0; i < halfRounds; i++) {
+      const dateRow = leftDateCol.addStack();
+      const gpRow = leftGPCol.addStack();
+
+      dateRow.size = new Size(leftDateCol.size.width, leftDateCol.size.height / lColEnd);
+      gpRow.size = new Size(leftGPCol.size.width, leftGPCol.size.height / lColEnd);
+
+      const dateText = dateRow.addText(`${gpDates[i]}`);
+      const gpText = gpRow.addText(`${gpLocs[i]}`);
+
+      dateRow.layoutHorizontally();
+      gpRow.layoutHorizontally();
+
+      dateRow.addSpacer();
+      gpRow.addSpacer();
+
+      dateText.font = f1Font12;
+      gpText.font = f1Font12;
     }
-    for (let i = rColStart; i < rColEnd; i++) {
-      const rowL = leftCol2.addStack();
-      const rowR = rightCol2.addStack();
-      rowL.layoutHorizontally();
-      rowL.layoutHorizontally();
-      rowL.addSpacer(20);
-      const rowDateText = rowL.addText(`${gpDates[i]}`);
-      const rowLocText = rowR.addText(`${gpLocs[i]}`);
-      rowDateText.font = Font.systemFont(12);
-      rowLocText.font = Font.systemFont(12);
+    for (let i = halfRounds; i < totalRounds; i++) {
+      const dateRow = rightDateCol.addStack();
+      const gpRow = rightGPCol.addStack();
+
+      dateRow.size = new Size(rightDateCol.size.width, rightDateCol.size.height / lColEnd);
+      gpRow.size = new Size(rightGPCol.size.width, rightGPCol.size.height / lColEnd);
+
+      const dateText = dateRow.addText(`${gpDates[i]}`);
+      const gpText = gpRow.addText(`${gpLocs[i]}`);
+
+      dateRow.layoutHorizontally();
+      gpRow.layoutHorizontally();
+
+      dateRow.addSpacer();
+      gpRow.addSpacer();
+
+      dateText.font = f1Font12;
+      gpText.font = f1Font12;
     }
+
+    widget.backgroundColor = new Color("99bbffff"); // placeholder color until I can implement a color picking function
   },
   showNextGP() {
     //shows date and time for the next GP
@@ -1312,8 +1355,6 @@ await cache.downloadCache(file.schedule);
 await cache.downloadCache(file.driverStandings);
 await cache.downloadCache(file.constructorStandings);
 await helper.downloadImages();
-
-views.showNextGP();
 
 if (config.runsInApp) {
   widget.presentMedium();
