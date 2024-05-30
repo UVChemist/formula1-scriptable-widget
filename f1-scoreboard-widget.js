@@ -818,8 +818,8 @@ const views = {
       const dateRow = leftDateCol.addStack();
       const gpRow = leftGPCol.addStack();
 
-      dateRow.size = new Size(leftDateCol.size.width, leftDateCol.size.height / lColEnd);
-      gpRow.size = new Size(leftGPCol.size.width, leftGPCol.size.height / lColEnd);
+      dateRow.size = new Size(leftDateCol.size.width, leftDateCol.size.height / halfRounds);
+      gpRow.size = new Size(leftGPCol.size.width, leftGPCol.size.height / halfRounds);
 
       const dateText = dateRow.addText(`${gpDates[i]}`);
       const gpText = gpRow.addText(`${gpLocs[i]}`);
@@ -837,8 +837,8 @@ const views = {
       const dateRow = rightDateCol.addStack();
       const gpRow = rightGPCol.addStack();
 
-      dateRow.size = new Size(rightDateCol.size.width, rightDateCol.size.height / lColEnd);
-      gpRow.size = new Size(rightGPCol.size.width, rightGPCol.size.height / lColEnd);
+      dateRow.size = new Size(rightDateCol.size.width, rightDateCol.size.height / halfRounds);
+      gpRow.size = new Size(rightGPCol.size.width, rightGPCol.size.height / halfRounds);
 
       const dateText = dateRow.addText(`${gpDates[i]}`);
       const gpText = gpRow.addText(`${gpLocs[i]}`);
@@ -1344,6 +1344,30 @@ const views = {
 
 const app = {
   init() {
+    const widgetOptions = args.widgetParameter.toString();
+    const optionsArr = widgetOptions.split(",");
+
+    if (optionsArr.length === 1) {
+      const widgetType = optionsArr[0];
+      views[widgetType]();
+    } else if (optionsArr.length === 2) {
+      const widgetType = optionsArr[0];
+      const backgroundColor = widgetOptions[1];
+
+      views[widgetType]();
+      widget.backgroundColor = new Color(backgroundColor);
+    } else if (optionsArr.length >= 3) {
+      const widgetType = optionsArr[0];
+      const backgroundColor = widgetOptions[1];
+      const textColor = widgetOptions[2];
+
+      views[widgetType]();
+      widget.backgroundColor = new Color(backgroundColor);
+      widget.textColor = new Color(textColor);
+    } else {
+      console.log("No widget options provided");
+    }
+
     return;
   },
 };
@@ -1355,6 +1379,8 @@ await cache.downloadCache(file.schedule);
 await cache.downloadCache(file.driverStandings);
 await cache.downloadCache(file.constructorStandings);
 await helper.downloadImages();
+
+app.init();
 
 if (config.runsInApp) {
   widget.presentMedium();
