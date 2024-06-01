@@ -1,17 +1,14 @@
 // Variables used by Scriptable.
 // These must be at the very top of the file. Do not edit.
 // icon-color: red; icon-glyph: car;
-// Variables used by Scriptable.
-// These must be at the very top of the file. Do not edit.
-// icon-color: pink; icon-glyph: car;
 const widget = new ListWidget();
 const fileMgr = FileManager.iCloud();
 const appDir = fileMgr.documentsDirectory();
 
 const file = {
-  schedule: fileMgr.joinPath(appDir, "f1-scoreboard-files/schedule-cache.json"),
-  driverStandings: fileMgr.joinPath(appDir, "f1-scoreboard-files/driver-cache.json"),
-  constructorStandings: fileMgr.joinPath(appDir, "f1-scoreboard-files/constructor-cache.json"),
+  schedule: fileMgr.joinPath(appDir, "f1-scoreboard-files/cache/schedule-cache.json"),
+  driverStandings: fileMgr.joinPath(appDir, "f1-scoreboard-files/cache/driver-cache.json"),
+  constructorStandings: fileMgr.joinPath(appDir, "f1-scoreboard-files/cache/constructor-cache.json"),
   flagImages: fileMgr.joinPath(appDir, "f1-scoreboard-files/driver-flags/"),
   teamLogos: fileMgr.joinPath(appDir, "f1-scoreboard-files/team-logos"),
   f1Logo: fileMgr.joinPath(appDir, "f1-scoreboard-files/team-logos/f1.png"),
