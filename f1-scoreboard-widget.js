@@ -625,7 +625,7 @@ const helper = {
       return false;
     }
   },
-  downloadImages() {
+  async downloadImages() {
     const logoPathObj = file.teamLogos;
     const logoPaths = Object.values(logoPathObj);
 
@@ -1340,7 +1340,15 @@ const views = {
 };
 
 const app = {
-  init() {
+  async init() {
+    await requests.scheduleRequest();
+    await requests.constructorRequest();
+    await requests.driversRequest();
+    await cache.downloadCache(file.schedule);
+    await cache.downloadCache(file.driverStandings);
+    await cache.downloadCache(file.constructorStandings);
+    await helper.downloadImages();
+
     const widgetOptions = args.widgetParameter.toString();
     const optionsArr = widgetOptions.split(",");
 
@@ -1365,22 +1373,14 @@ const app = {
       console.log("No widget options provided");
     }
 
+    if (config.runsInApp) {
+      widget.presentMedium();
+    } else if (config.runsInWidget) {
+      Script.setWidget(widget);
+    }
+
     return;
   },
 };
 
-await requests.scheduleRequest();
-await requests.constructorRequest();
-await requests.driversRequest();
-await cache.downloadCache(file.schedule);
-await cache.downloadCache(file.driverStandings);
-await cache.downloadCache(file.constructorStandings);
-await helper.downloadImages();
-
-app.init();
-
-if (config.runsInApp) {
-  widget.presentMedium();
-} else if (config.runsInWidget) {
-  Script.setWidget(widget);
-}
+await app.init();
