@@ -1381,6 +1381,12 @@ const app = {
 
     return;
   },
+  version() {
+    const versionNum = "v0.5";
+    return versionNum;
+  },
 };
+
+export const version = app.version();
 
 await app.init();
