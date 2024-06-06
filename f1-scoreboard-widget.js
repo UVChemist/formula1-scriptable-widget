@@ -1387,6 +1387,8 @@ const app = {
   },
 };
 
-export const version = app.version();
+module.exports = {
+  version: app.version(),
+};
 
 await app.init();
