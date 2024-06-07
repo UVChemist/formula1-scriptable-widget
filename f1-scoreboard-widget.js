@@ -1381,14 +1381,6 @@ const app = {
 
     return;
   },
-  version() {
-    const versionNum = "v0.5";
-    return versionNum;
-  },
-};
-
-module.exports = {
-  version: app.version(),
 };
 
 await app.init();
