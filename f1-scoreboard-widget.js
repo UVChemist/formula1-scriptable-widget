@@ -764,22 +764,22 @@ const views = {
 
     const logoRow = widget.addStack();
     const mainStack = widget.addStack();
-    //mainStack.addSpacer();
     const leftCol = mainStack.addStack();
+    const centerLine = mainStack.addStack();
     const rightCol = mainStack.addStack();
-    //mainStack.addSpacer();
     const leftOrganizerRow = leftCol.addStack();
     const rightOrganizerRow = rightCol.addStack();
-    leftOrganizerRow.addSpacer();
+    leftOrganizerRow.addSpacer(30);
+    rightOrganizerRow.addSpacer(30);
     const leftDateCol = leftOrganizerRow.addStack();
     const leftGPCol = leftOrganizerRow.addStack();
     const rightDateCol = rightOrganizerRow.addStack();
     const rightGPCol = rightOrganizerRow.addStack();
-    rightOrganizerRow.addSpacer();
 
     logoRow.layoutHorizontally();
     mainStack.layoutHorizontally();
     leftCol.layoutVertically();
+    centerLine.layoutVertically();
     rightCol.layoutVertically();
     leftOrganizerRow.layoutHorizontally();
     rightOrganizerRow.layoutHorizontally();
@@ -788,16 +788,20 @@ const views = {
     rightDateCol.layoutVertically();
     rightGPCol.layoutVertically();
 
+    leftCol.centerAlignContent();
+    rightCol.centerAlignContent();
+
     logoRow.size = new Size(345, 30);
     mainStack.size = new Size(345, 128); // grab phone data (version or screen size) and calculate widget size
     leftCol.size = new Size(mainStack.size.width / 2, mainStack.size.height);
+    centerLine.size = new Size(0.5, mainStack.size.height);
     rightCol.size = new Size(mainStack.size.width / 2, mainStack.size.height);
     leftOrganizerRow.size = new Size(leftCol.size.width, leftCol.size.height);
     rightOrganizerRow.size = new Size(rightCol.size.width, rightCol.size.height);
     leftDateCol.size = new Size(leftOrganizerRow.size.width / 4, leftOrganizerRow.size.height);
-    leftGPCol.size = new Size(leftOrganizerRow.size.width / 2, leftOrganizerRow.size.height);
+    leftGPCol.size = new Size(leftOrganizerRow.size.width / 1.5, leftOrganizerRow.size.height);
     rightDateCol.size = new Size(rightOrganizerRow.size.width / 4, rightOrganizerRow.size.height);
-    rightGPCol.size = new Size(rightOrganizerRow.size.width / 2, rightOrganizerRow.size.height);
+    rightGPCol.size = new Size(rightOrganizerRow.size.width / 1.5, rightOrganizerRow.size.height);
 
     // Logo Row Settings
     logoRow.centerAlignContent();
@@ -850,6 +854,7 @@ const views = {
       gpText.font = f1Font12;
     }
 
+    centerLine.backgroundColor = new Color("ffffff");
     widget.backgroundColor = new Color("99bbffff"); // placeholder color until I can implement a color picking function
   },
   showNextGP() {
@@ -975,7 +980,6 @@ const views = {
     trackImage.applyFittingContentMode();
 
     widget.backgroundColor = new Color("99bbffff"); // placeholder color until I can implement a color picking function
-    //centerLine.backgroundColor = new Color("ffffff");
   },
   showDriverStandings() {
     const f1Font22 = new Font("Copperplate", 22);
